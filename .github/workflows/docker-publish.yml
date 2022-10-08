@@ -42,6 +42,10 @@ jobs:
         with:
           cosign-release: 'v1.11.0'
 
+      - name: Set version
+        id: version
+        run: echo "::set-output name=version::$(cat VERSION)"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@8b122486cedac8393e77aa9734c3528886e4a1a8
 
@@ -75,7 +79,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
           platforms: ${{ env.PLATFORMS }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -93,5 +97,5 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run:
-          echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{
-          steps.build-and-push.outputs.digest }}
+          echo "${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}" |
+          xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
