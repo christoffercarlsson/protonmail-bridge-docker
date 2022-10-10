@@ -12,8 +12,5 @@ else
   socat TCP-LISTEN:2025,fork TCP:127.0.0.1:1025 &
   socat TCP-LISTEN:2143,fork TCP:127.0.0.1:1143 & 
   
-  rm -f faketty
-  mkfifo faketty
-
-  cat faketty | /protonmail/proton-bridge --cli 2> /dev/null
+  /protonmail/proton-bridge 2> /dev/null
 fi
